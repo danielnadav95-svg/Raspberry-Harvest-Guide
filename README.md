@@ -167,6 +167,15 @@
             border-radius: 4px;
         }
 
+        pre {
+            overflow-x: auto;
+            background: #020617;
+            color: #e5e7eb;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+        }
+
         .badge {
             display: inline-block;
             font-size: 0.78rem;
@@ -236,7 +245,7 @@
 
 <header>
     <h1>הפטל של עופר – מערכת מעקב קטיף</h1>
-    <p>תיעוד מלא של הזרימה, המודולים והאוטומציות</p>
+    <p>תיעוד מלא של הזרימה, הגיליונות והאוטומציות</p>
 </header>
 
 <div class="container">
@@ -248,47 +257,69 @@
         <a href="#fillout">טופס Fillout</a>
         <a href="#sheets">Google Sheets</a>
         <a href="#scripts">אוטומציות (Apps Script)</a>
+        <a href="#email-summary">מייל סיכום שבועי</a>
         <a href="#triggers">טריגרים</a>
-        <a href="#maintenance">תחזוקה ושינויים</a>
+        <a href="#maintenance">תחזוקה ושכפול</a>
+        <a href="#code-rebuild">קוד rebuildHarvestData</a>
+        <a href="#code-weekly">קוד sendWeeklyHarvestEmail</a>
     </nav>
 
     <!-- Overview -->
     <section id="overview">
         <h2>1. מבט על המערכת</h2>
         <p class="tagline">
-            המערכת מחברת בין טופס מקוון, גיליון נתונים ואוטומציות כדי להפיק תמונת מצב יומית ושבועית על קטיף הפטל בכל החממות.
+            המערכת מחברת בין טופס Fillout, חוברת תשובות נפרדת, חוברת הנתונים הראשית ואוטומציות Apps Script –
+            כדי להפיק תמונת מצב יומית ושבועית על קטיף פטל, תות ואוסנת בכל החממות.
         </p>
 
         <div class="platform-grid">
             <div class="platform">
                 <div class="label">קליטה</div>
-                <strong>טופס Fillout</strong>
-                <div>עובדי השטח ממלאים טופס קצר בסיום קטיף מחממה.</div>
-                <a class="link-btn" href="https://forms.fillout.com/t/qpzG7RH3sFus" target="_blank">פתיחת הטופס</a>
+                <strong>טופס Fillout – דיווח קטיף</strong>
+                <div>עובדי השטח ממלאים טופס קצר בטלפון בסיום קטיף.</div>
+                <a class="link-btn" href="https://forms.fillout.com/t/f1b1uSZiHius" target="_blank">פתיחת הטופס</a>
             </div>
+
             <div class="platform">
-                <div class="label">אחסון & חישוב</div>
-                <strong>Google Sheets</strong>
-                <div>כמה גליונות: תשובות גולמיות, נתונים מפורקים לפי חממה/זן, ו-KPI יומיים ושבועיים.</div>
-                <a class="link-btn" href="https://docs.google.com/spreadsheets/d/13BhYmx0mXBwclE061Bu5XL1rmGNVqvbVl-4P_R9tXnw/edit?usp=sharing" target="_blank">פתיחת הגיליון</a>
+                <div class="label">תשובות מקור</div>
+                <strong>Google Sheets – Picking report</strong>
+                <div>הטופס מזין כל תשובה לחוברת ייעודית שבה נשמרים כל פרטי המילוי המקוריים.</div>
+                <a class="link-btn" href="https://docs.google.com/spreadsheets/d/1Zi0tJO4om1sPwmA8dTslF1knk7Fi_iHBJ97VBhpZAVk/edit?usp=sharing" target="_blank">
+                    פתיחת חוברת התשובות
+                </a>
             </div>
+
+            <div class="platform">
+                <div class="label">אחסון וחישוב</div>
+                <strong>Google Sheets – מעקב קטיף פטל</strong>
+                <div>החוברת הראשית: Raw_Responses, Harvest_Data, Harvest_KPI, Greenhouse_Performance ועוד.</div>
+                <a class="link-btn" href="https://docs.google.com/spreadsheets/d/1JS5ZPejDNjVlq-Qk9R0Cncb19vuJ18Gsf4A99WSscSE/edit?gid=1085857775" target="_blank">
+                    פתיחת החוברת הראשית
+                </a>
+            </div>
+
             <div class="platform">
                 <div class="label">לוגיקה עסקית</div>
                 <strong>Google Apps Script</strong>
-                <div>שתי אוטומציות עיקריות: עיבוד נתוני קטיף ובניית טבלת עבודה, ושליחת מייל יומי מסכם.</div>
+                <div>שתי אוטומציות עיקריות: עיבוד נתוני קטיף (rebuildHarvestData) ושליחת מייל סיכום שבועי (sendWeeklyHarvestEmail).</div>
             </div>
         </div>
 
         <details>
-            <summary>פירוט מלא על ארכיטקטורת המערכת</summary>
+            <summary>פירוט ארכיטקטורת המערכת</summary>
             <div class="details-body">
                 <ol>
-                    <li><strong>איסוף נתונים:</strong> כל אירוע קטיף מדווח בטופס Fillout. הנתונים נשמרים תחילה בטבלת תשובות גולמית (Raw_Responses).</li>
-                    <li><strong>עיבוד ראשוני:</strong> אוטומציה <code>rebuildHarvestData</code> קוראת את תשובות הטופס, מפרקת את השדות המורכבים (כמו טבלה בתוך תא אחד), ומייצרת טבלת שורות "שטוחה" ב-<code>Harvest_Data</code>.</li>
-                    <li><strong>חישוב KPI:</strong> בחישובים וגיליונות נוסעים מעל <code>Harvest_Data</code> כדי להפיק מדדים ל-<code>Harvest_KPI</code> ו-<code>Greenhouse_Performance</code> (תפוקה לפי יום, חממה, זן, 7 ימים, 30 ימים וכו').</li>
-                    <li><strong>תקשורת למנהלים:</strong> אוטומציה <code>sendDailyHarvestEmail</code> רצה פעם ביום, שולפת מה-KPI את סיכום היום והנתונים השבועיים, ושולחת מייל מסודר למנהלים.</li>
+                    <li><strong>איסוף נתונים:</strong> כל דיווח קטיף נרשם בטופס Fillout.</li>
+                    <li><strong>שכבת תשובות מקור:</strong> Fillout כותב את הנתונים לשורות חדשות בחוברת <em>Picking report</em>.</li>
+                    <li><strong>ייבוא לחוברת הראשית:</strong> בגיליון <code>Raw_Responses</code> שבחוברת הראשית יש נוסחאות
+                        (לרוב <code>IMPORTRANGE</code>) שמושכות את השדות הרלוונטיים מ-Picking report ומתרגמות כותרות לארכיטקטורה המקומית.</li>
+                    <li><strong>עיבוד ראשוני:</strong> פונקציה <code>rebuildHarvestData</code> קוראת את Raw_Responses,
+                        מפרקת את שדה הטבלה "רישום קטיף לפי חממה וזן" ומייצרת טבלה שטוחה בגיליון <code>Harvest_Data</code>.</li>
+                    <li><strong>חישוב KPI:</strong> נוסחאות ב-<code>Harvest_KPI</code> ו-<code>Greenhouse_Performance</code>
+                        מחשבות סך ק"ג, אחוז סוג ב', ק"ג למטר רץ, 7 ימים אחרונים, 30 ימים ועוד.</li>
+                    <li><strong>דיווח למנהלים:</strong> פונקציה <code>sendWeeklyHarvestEmail</code> רצה פעם בשבוע,
+                        מסכמת את השבוע האחרון ושולחת מייל ממוקד.</li>
                 </ol>
-                <p>מנקודת מבט של משתמש קצה: יש רק שני דברים קבועים – למלא את הטופס אחרי קטיף, ולקרוא את המייל/דשבורד. כל השאר מתרחש מאחורי הקלעים.</p>
             </div>
         </details>
     </section>
@@ -296,59 +327,61 @@
     <!-- Data Flow -->
     <section id="flow">
         <h2>2. זרימת נתונים מקצה לקצה</h2>
-        <p class="tagline">התרשים הטקסטואלי הבא מסכם את המסלול שעובר כל דיווח קטיף עד שהוא הופך למספר בדשבורד.</p>
+        <p class="tagline">מהרגע שעובד לוחץ "שלח" בטופס – עד שהנתון מופיע בדשבורד ובמייל השבועי.</p>
 
         <details open>
-            <summary>סיכום קצר של הזרימה</summary>
+            <summary>סיכום זרימה קצר</summary>
             <div class="details-body">
                 <ol>
-                    <li>עובד ממלא טופס קטיף בטלפון.</li>
-                    <li>Fillout שולח את הנתונים לשורה חדשה בגיליון תשובות גולמי ב-Google Sheets.</li>
-                    <li>סקריפט <code>rebuildHarvestData</code> מעבד את כל השורות ויוצר טבלה מפורטת לפי: תאריך × חממה × זן.</li>
-                    <li>נוסחאות בגיליונות KPI מחשבות סך ק"ג, אחוז סוג ב', ק"ג למטר רץ ועוד.</li>
-                    <li>סקריפט <code>sendDailyHarvestEmail</code> אוסף את הנתונים של היום + 7 ימים אחרונים ומייצר מייל סיכום.</li>
+                    <li>עובד ממלא את טופס ה-Fillout בטלפון.</li>
+                    <li>התשובה נרשמת בחוברת <strong>Picking report</strong> כשורה חדשה.</li>
+                    <li>גיליון <code>Raw_Responses</code> בחוברת הראשית מושך את הנתונים באמצעות <code>IMPORTRANGE</code>.</li>
+                    <li><code>rebuildHarvestData</code> מעבד את כל Raw_Responses ומייצר Harvest_Data.</li>
+                    <li>נוסחאות ב-Harvest_KPI ו-Greenhouse_Performance חושבות KPI יומי, שבועי וחודשי.</li>
+                    <li><code>sendWeeklyHarvestEmail</code> מסכמת את השבוע האחרון ושולחת למנהלים מייל סיכום.</li>
                 </ol>
             </div>
         </details>
 
         <details>
-            <summary>פירוט: מה נכנס ומה יוצא בכל שלב</summary>
+            <summary>מה נכנס ומה יוצא בכל שכבה</summary>
             <div class="details-body">
-                <h3>שלב 1 – טופס Fillout</h3>
+                <h3>2.1 טופס Fillout</h3>
                 <ul>
-                    <li><strong>קלט מהמשתמש:</strong> תאריך הקטיף, חממה, זן, כמות סוג א, כמות סוג ב, הערות חופשיות.</li>
-                    <li><strong>פלט:</strong> רשומה חדשה עם כל הפרטים שנשמרת בטבלת תשובות (Raw_Responses) בגיליון גוגל.</li>
+                    <li><strong>קלט:</strong> תאריך הקטיף, חממה, זן, כמות סוג א (נספקים), כמות סוג ב (ק"ג), קטיף נוסף (תות/אוסנת), הערות חופשיות.</li>
+                    <li><strong>פלט:</strong> שורת נתונים חדשה בטבלת Picking report.</li>
                 </ul>
-                <h3>שלב 2 – טבלת תשובות גולמית (Raw_Responses)</h3>
+
+                <h3>2.2 חוברת Picking report</h3>
                 <ul>
-                    <li><strong>קלט:</strong> נתון גולמי מהטופס, כולל שדה טקסט אחד שמכיל "רישום קטיף לפי חממה וזן" בפורמט של שורות.</li>
-                    <li><strong>פלט:</strong> מאגר נתונים בסיסי שממנו הסקריפט קורא ומפרק לכל חממה/זן.</li>
+                    <li><strong>קלט:</strong> כל נתוני הטופס כפי שנשלחו.</li>
+                    <li><strong>מבנה טיפוסי:</strong> <code>Submission ID</code>, <code>Submission time</code>, <code>Harvest Date</code>,
+                        <code>Report Filled By</code>, שדה "Harvest Log by Greenhouse and Variety" ושדות נוספים (תות/אוסנת).</li>
+                    <li><strong>פלט:</strong> מקור אמת יחיד לכל המילויים, ממנו חוברת ההטמעה מושכת שדות.</li>
                 </ul>
-                <h3>שלב 3 – עיבוד והשטחה (Harvest_Data)</h3>
+
+                <h3>2.3 Raw_Responses – חוברת ההטמעה</h3>
                 <ul>
-                    <li><strong>קלט:</strong> כל שורות Raw_Responses + טבלת הגדרות <code>Config_Greenhouses</code> (מידע על מטר רץ, דונמים, זנים וכו').</li>
-                    <li><strong>לוגיקה:</strong> הסקריפט עובר על כל שורה, מפרק את הטבלה שבתוך התא לכמה שורות, ממיר כמויות לטיפוס מספרי, ומוסיף מידע עזר (SubmissionID, LineIndex).</li>
-                    <li><strong>פלט:</strong> טבלה בה כל שורה מייצגת קומבינציה ייחודית של:
-                        <br>תאריך קטיף × חממה × זן × סוג (א/ב) עם הערות רלוונטיות.</li>
+                    <li><strong>קלט:</strong> נוסחאות IMPORTRANGE מתוך Picking report שמביאות:
+                        תאריך, שם ממלא הדוח, הערות ליום הקטיף, שדה טבלה "רישום קטיף לפי חממה וזן".</li>
+                    <li><strong>פלט:</strong> טבלה נוחה לעיבוד ע"י Apps Script (שורה אחת לכל מילוי טופס).</li>
                 </ul>
-                <h3>שלב 4 – חישוב KPI (Harvest_KPI, Greenhouse_Performance)</h3>
+
+                <h3>2.4 Harvest_Data – השטחת הנתונים</h3>
                 <ul>
-                    <li><strong>קלט:</strong> טבלת Harvest_Data + Config_Greenhouses.</li>
-                    <li><strong>לוגיקה:</strong> נוסחאות <code>SUMIFS</code>, <code>FILTER</code>, <code>AVERAGE</code> ו-<code>IFERROR</code> מחשבות:
-                        <ul>
-                            <li>סך ק"ג סוג א / כולל לכל חממה וזן ביום.</li>
-                            <li>אחוז סוג ב' מתוך הכולל.</li>
-                            <li>ק"ג למטר רץ בחממה.</li>
-                            <li>סכום 7 ימים אחרונים וממוצע 30 יום.</li>
-                        </ul>
-                    </li>
-                    <li><strong>פלט:</strong> שתי טבלאות KPI – אחת ברמת חממה+זן, ואחת שמרכזת נתונים לפי חממה לצורך דשבורד וגרפים.</li>
+                    <li><strong>קלט:</strong> כל Raw_Responses.</li>
+                    <li><strong>לוגיקה:</strong> כל תא טבלה מפורמט "Greenhouse X, Variety Y, Grade A, Grade B"
+                        מפוצל לשורה נפרדת. כל הערכים מומרות למספרים.</li>
+                    <li><strong>פלט:</strong> שורה אחת לכל <strong>תאריך × חממה × זן</strong> עם:
+                        נספקים סוג א, ק"ג סוג ב, הערות, מזהי SubmissionID ו-LineIndex.</li>
                 </ul>
-                <h3>שלב 5 – מייל יומי למנהלים</h3>
+
+                <h3>2.5 Harvest_KPI ו-Greenhouse_Performance</h3>
                 <ul>
-                    <li><strong>קלט:</strong> נתונים מעודכנים מ-Harvest_KPI ו-Greenhouse_Performance עבור תאריך היום.</li>
-                    <li><strong>לוגיקה:</strong> חישוב סיכום לכל החווה + פירוט לכל חממה והשוואה לממוצע שבועי.</li>
-                    <li><strong>פלט:</strong> הודעת מייל יומית עם סיכום קטיף והדגשת חממות מעל/מתחת לממוצע.</li>
+                    <li><strong>Harvest_KPI:</strong> חישוב ברמת <strong>יום × חממה × זן</strong>:
+                        סך נספקים סוג א, סך ק"ג כולל, אחוז סוג ב', ק"ג למטר רץ, ממוצע 7/30 ימים, ועוד.</li>
+                    <li><strong>Greenhouse_Performance:</strong> טבלת ביצועים ברמת חממה:
+                        סך שבוע אחרון, סך 30 יום, אחוזי סוג ב' מצטברים, דירוג חממות וגרפים.</li>
                 </ul>
             </div>
         </details>
@@ -356,32 +389,33 @@
 
     <!-- Fillout -->
     <section id="fillout">
-        <h2>3. טופס Fillout – נקודת הכניסה למערכת</h2>
-        <p class="tagline">הטופס צריך להיות יציב ופשוט – כל שינוי בשדות דורש התאמה בסקריפט ובגיליון.</p>
+        <h2>3. טופס Fillout – מבנה ורגישות לשינויים</h2>
+        <p class="tagline">הטופס הוא נקודת הכניסה, לכן כל שינוי בשדות מחייב בדיקה קצרה במערכת.</p>
 
         <details open>
-            <summary>שדות חובה ומבנה מומלץ</summary>
+            <summary>שדות עיקריים</summary>
             <div class="details-body">
                 <ul>
-                    <li><strong>תאריך הקטיף</strong> – אם אפשר, ברירת מחדל לתאריך היום.</li>
-                    <li><strong>חממה</strong> – רשימה נפתחת עם 1–6 (או שמות חממות).</li>
-                    <li><strong>זן</strong> – רשימה נפתחת של הזנים הפעילים.</li>
-                    <li><strong>כמות סוג א (ק"ג)</strong> – שדה מספר.</li>
-                    <li><strong>כמות סוג ב (ק"ג)</strong> – שדה מספר (אפשר 0).</li>
-                    <li><strong>הערות ליום הקטיף</strong> – טקסט חופשי (מזג אוויר, מחלות, חוסרים וכו').</li>
+                    <li>תאריך הקטיף (Harvest Date).</li>
+                    <li>Report Filled By – שם ממלא הדוח.</li>
+                    <li>Harvest Day Notes – הערות ליום הקטיף.</li>
+                    <li>Harvest Log by Greenhouse and Variety – טבלה טקסטואלית:
+                        <code>Greenhouse, Variety, Grade A (Punnets), Grade B (Kg)</code> בשורות נפרדות.</li>
+                    <li>שדות קטיף נוסף (Strawberry / Osnat) – כמויות נספקים וק"ג.</li>
                 </ul>
-                <p>הטופס הקיים יכול לכלול גם שדה מורכב של "רישום קטיף לפי חממה וזן" בטבלה – הסקריפט הנוכחי יודע לפרק אותו לשורות נפרדות.</p>
-                <a class="link-btn" href="https://forms.fillout.com/t/qpzG7RH3sFus" target="_blank">פתיחת הטופס</a>
+                <a class="link-btn" href="https://forms.fillout.com/t/f1b1uSZiHius" target="_blank">לצפייה בטופס</a>
             </div>
         </details>
 
         <details>
-            <summary>מה צריך לדעת אם מוסיפים או משנים שדות?</summary>
+            <summary>השלכות של שינוי בשדות</summary>
             <div class="details-body">
                 <ul>
-                    <li>כל שינוי בשם שדה או מבנה השדה בטופס משנה את כותרות העמודות ב-Raw_Responses.</li>
-                    <li>האוטומציה <code>rebuildHarvestData</code> מאתרת עמודות לפי שמות כותרות. שינוי שם עמודה יחייב עדכון בקוד.</li>
-                    <li>המלצה: לפני שינוי, לסמן צילום מסך של כותרות הגיליון ולהשוות אחרי השינוי.</li>
+                    <li>שינוי שם שדה ב-Fillout משנה את שם הכותרת ב-Picking report.</li>
+                    <li>אם Raw_Responses מושך עמודה זו לפי מיקום – ייתכן שלא צריך לשנות כלום.
+                        אם הוא מושך לפי שם כותרת – יש לעדכן את הנוסחה.</li>
+                    <li><code>rebuildHarvestData</code> מסתמך על שמות הכותרות ב-Raw_Responses
+                        (כמו <code>תאריך הקטיף</code>, <code>רישום קטיף לפי חממה וזן</code> וכו'). שינוי שם דורש עדכון בקוד.</li>
                 </ul>
             </div>
         </details>
@@ -389,43 +423,39 @@
 
     <!-- Sheets -->
     <section id="sheets">
-        <h2>4. Google Sheets – מבנה הגיליונות</h2>
+        <h2>4. Google Sheets – מבנה הגיליונות בחוברת הראשית</h2>
 
         <details open>
-            <summary>סקירה של הגיליונות העיקריים</summary>
+            <summary>4.1 הגיליונות המרכזיים</summary>
             <div class="details-body">
                 <ul>
-                    <li><strong>Raw_Responses</strong> <span class="badge">קריאה בלבד</span> – שורות גולמיות שמגיעות מהטופס.</li>
-                    <li><strong>Harvest_Data</strong> <span class="badge">נבנה אוטומטית</span> – טבלה מפורקת ברמת חממה+זן+סוג.</li>
-                    <li><strong>Config_Greenhouses</strong> <span class="badge">קונפיגורציה</span> – מידע סטטי לכל חממה (שם, מטר רץ שתול, דונם וכו').</li>
-                    <li><strong>Harvest_KPI</strong> – KPI ברמת תאריך+חממה+זן (סך ק"ג, אחוזים, ק"ג למטר רץ).</li>
-                    <li><strong>Greenhouse_Performance</strong> – סיכומים ברמת חממה (שבועי/חודשי, דירוג חממות, גרפים).</li>
+                    <li><strong>Raw_Responses</strong> <span class="badge">מושך מ-Picking report</span> –
+                        שורה אחת לכל מילוי טופס.</li>
+                    <li><strong>Harvest_Data</strong> <span class="badge">נבנה אוטומטית</span> –
+                        שורה אחת לכל תאריך × חממה × זן.</li>
+                    <li><strong>Config_Greenhouses</strong> <span class="badge">קונפיגורציה</span> –
+                        שם חממה, אורך מטר רץ, דונמים וכו'.</li>
+                    <li><strong>Harvest_KPI</strong> –
+                        KPI מפורט ברמת יום × חממה × זן + טבלאות תות ואוסנת.</li>
+                    <li><strong>Greenhouse_Performance</strong> –
+                        סיכומי ביצועים ברמת חממה (שבוע אחרון, 30 יום, אחוזי סוג ב').</li>
                 </ul>
-                <p>העיקרון: לא לגעת ידנית ב-Raw_Responses וב-Harvest_Data. העבודה האנליטית והגרפים מתבצעים על Harvest_KPI ו-Greenhouse_Performance בלבד.</p>
+                <p>העיקרון: לא לגעת ידנית ב-Raw_Responses וב-Harvest_Data.
+                    כל עבודה ניהולית/אנליטית צריכה להתבסס על Harvest_KPI ו-Greenhouse_Performance.</p>
             </div>
         </details>
 
         <details>
-            <summary>שדות מפתח ב-Harvest_Data וב-Harvest_KPI</summary>
+            <summary>4.2 Greenhouse_Performance – מה מופיע שם?</summary>
             <div class="details-body">
-                <h3>Harvest_Data – שורה = "אירוע קטיף מפורק"</h3>
+                <p>בכל שורה מופיעה חממה אחת, עם מדדים מרכזיים שנגזרים מ-Harvest_KPI:</p>
                 <ul>
-                    <li>תאריך הקטיף</li>
-                    <li>חממה</li>
-                    <li>זן</li>
-                    <li>כמות סוג א (ק"ג)</li>
-                    <li>כמות סוג ב (ק"ג)</li>
-                    <li>הערות ליום הקטיף</li>
-                    <li>SubmissionID + LineIndex – מזהים לחיבור חזרה לשורה בטופס המקורי במקרה הצורך</li>
+                    <li>סה"כ ק"ג שנקטפו בחממה ב-7 הימים האחרונים.</li>
+                    <li>סה"כ ק"ג ב-30 הימים האחרונים.</li>
+                    <li>אחוז סוג ב' מצטבר (משקלית) על פני התקופה.</li>
+                    <li>שיעור הזנים השונים מתוך כלל הקטיף בחממה.</li>
                 </ul>
-                <h3>Harvest_KPI – שורה = "יום × חממה × זן"</h3>
-                <ul>
-                    <li>סך ק"ג סוג א ליום</li>
-                    <li>סך ק"ג כולל ליום</li>
-                    <li>% סוג ב' מסך הקטיף</li>
-                    <li>ק"ג למטר רץ ליום</li>
-                    <li>ממוצע 7 ימים / 30 ימים (בהתאם לנוסחאות שבחרת)</li>
-                </ul>
+                <p>הגיליון משמש בעיקר לדשבורדים וגרפים, וגם כבסיס להקשר שבו נקראים הנתונים במייל השבועי.</p>
             </div>
         </details>
     </section>
@@ -433,71 +463,431 @@
     <!-- Scripts -->
     <section id="scripts">
         <h2>5. האוטומציות ב-Apps Script</h2>
-        <p class="tagline">פרויקט יחיד ב-Apps Script שמחובר לגיליון, ובתוכו שתי פונקציות עיקריות.</p>
+        <p class="tagline">בפרויקט Apps Script המחובר לחוברת הראשית יש קובץ קוד אחד (למשל <code>Code.gs</code>)
+            עם שתי פונקציות עיקריות + פונקציות עזר.</p>
 
         <details open>
-            <summary>5.1 rebuildHarvestData – עיבוד ופירוק הנתונים</summary>
+            <summary>5.1 rebuildHarvestData – עיבוד נתוני קטיף</summary>
             <div class="details-body">
-                <p><strong>מטרה:</strong> לקרוא את נתוני הטופס, לפרק שדה טבלה מורכב ולהכניס ל-Harvest_Data שורה לכל חממה × זן × סוג.</p>
+                <p><strong>מטרה:</strong> קריאה של <code>Raw_Responses</code>, פירוק שדה הטבלה,
+                    והפקת טבלה נקייה ב-<code>Harvest_Data</code>.</p>
                 <ul>
-                    <li>מאתר את עמודות המפתח לפי שמות כותרת (תאריך הקטיף, רישום קטיף וכו').</li>
-                    <li>עובר על כל שורה ב-Raw_Responses, מדלג על שורות ריקות.</li>
-                    <li>מפצל את שדה "רישום קטיף לפי חממה וזן" לכמה שורות, לפי הפרדת שורות וסימני פסיק.</li>
-                    <li>ממיר כל כמות לפורמט מספרי באמצעות פונקציית עזר <code>toNumberSafe</code>.</li>
-                    <li>מכניס ל-Harvest_Data:
-                        <br>תאריך, חממה, זן, כמות סוג א, כמות סוג ב, הערות, SubmissionID, LineIndex.</li>
-                    <li>לפני הכתיבה מנקה את התוכן הישן בגיליון Harvest_Data ומשאיר את שורת הכותרת.</li>
+                    <li>מאתר את עמודות התאריך, ממלא הדוח, הערות ושדה הטבלה לפי כותרות.</li>
+                    <li>עובר על כל שורה ב-Raw_Responses (מ-שורה 2 ומטה).</li>
+                    <li>מפרק את שדה הטבלה לפי שורות (newline) ואז לפי פסיקים.</li>
+                    <li>ממיר ערכים מספריים בעזרת <code>toNumberSafe</code>.</li>
+                    <li>כותב מחדש את כל הטבלה ב-Harvest_Data, אחרי ניקוי התוכן הישן.</li>
                 </ul>
-                <p>כל פעם שהפונקציה רצה – היא בונה את Harvest_Data מחדש בהתאם לכל התשובות שהצטברו עד היום.</p>
-                <a class="link-btn" href="LINK_TO_REBUILDHARVESTDATA_CODE" target="_blank">
-                    צפייה בקוד המלא של rebuildHarvestData
-                </a>
-                <div class="callout">
-                    <strong>חשוב:</strong> שינוי שמות כותרות הגיליון או מבנה שדה הטבלה בטופס עלול לשבור את הפונקציה. לפני שינוי, לוודא שגם הקוד מתעדכן בהתאם.
-                </div>
+
+                <details id="code-rebuild">
+                    <summary>קוד מלא – rebuildHarvestData + toNumberSafe</summary>
+                    <div class="details-body">
+<pre><code>// בניית גיליון Harvest_Data מחדש מתוך Raw_Responses
+function rebuildHarvestData() {
+  const ss = SpreadsheetApp.getActive();
+
+  // שמות הגליונות בחוברת ההטמעה
+  const RAW_SHEET_NAME = 'Raw_Responses';
+  const OUT_SHEET_NAME = 'Harvest_Data';
+
+  const rawSheet = ss.getSheetByName(RAW_SHEET_NAME);
+  const outSheet = ss.getSheetByName(OUT_SHEET_NAME);
+
+  if (!rawSheet || !outSheet) {
+    throw new Error('נדרש שיהיו גיליונות בשם Raw_Responses ו-Harvest_Data');
+  }
+
+  const rawData = rawSheet.getDataRange().getValues();
+  if (rawData.length &lt; 2) {
+    // אין נתונים
+    return;
+  }
+
+  const headers = rawData[0];
+
+  // מיפוי עמודות לפי שם כותרת
+  function colIndex(headerName) {
+    const idx = headers.indexOf(headerName);
+    if (idx === -1) {
+      throw new Error('לא נמצאה כותרת עמודה בשם: ' + headerName);
+    }
+    return idx;
+  }
+
+  // שמות השדות כפי שהם מופיעים ב-Raw_Responses
+  const dateCol   = colIndex('תאריך הקטיף');
+  const nameCol   = colIndex('שם ממלא הדוח');
+  const notesCol  = colIndex('הערות ליום הקטיף (מזג אוויר, בעיות, חממות שלא נקטפו וכו\')');
+  const tableCol  = colIndex('רישום קטיף לפי חממה וזן');   // העמודה עם הטבלה
+
+  const outHeaders = [
+    'תאריך הקטיף',
+    'חממה',
+    'זן',
+    'כמות סוג א (נספקים)',
+    'כמות סוג ב (ק"ג)',
+    'שם ממלא הדוח',
+    'הערות ליום הקטיף',
+    'SubmissionID',
+    'LineIndex'
+  ];
+
+  // ניקוי תוכן קודם (משורה 2 ומטה) ושימור כותרות
+  const lastOutRow = outSheet.getLastRow();
+  if (lastOutRow &gt; 1) {
+    outSheet.getRange(2, 1, lastOutRow - 1, outHeaders.length).clearContent();
+  }
+
+  // לוודא שהכותרות נכונות
+  outSheet.getRange(1, 1, 1, outHeaders.length).setValues([outHeaders]);
+
+  const outRows = [];
+
+  // לולאה על כל השורות ב-Raw_Responses (מתחילים משורה שנייה – i = 1)
+  for (let i = 1; i &lt; rawData.length; i++) {
+    const row = rawData[i];
+
+    const date     = row[dateCol];
+    const filler   = row[nameCol];
+    const notes    = notesCol &gt;= 0 ? row[notesCol] : '';
+    const tableStr = row[tableCol];
+
+    if (!tableStr || tableStr === '') {
+      continue; // אין טבלה לשורה זו
+    }
+
+    // הפיכת הערך למחרוזת ופיצול לשורות
+    const lines = tableStr.toString().split('\n');
+    if (lines.length &lt;= 1) {
+      continue; // רק כותרת / לא באמת טבלה
+    }
+
+    const submissionId = i + 1;  // אפשר להחליף ל-ID אמיתי אם קיים
+    let lineIndex = 0;
+
+    // נניח שהשורה הראשונה היא כותרת ולכן מתחילים מ-1
+    for (let j = 1; j &lt; lines.length; j++) {
+      let line = lines[j].trim();
+      if (!line) {
+        continue;
+      }
+
+      // פיצול לפי פסיק
+      const parts = line.split(',');
+      if (parts.length &lt; 4) {
+        // שורות בעייתיות – מדלגים
+        continue;
+      }
+
+      const greenhouse = parts[0].trim(); // למשל "Greenhouse 1"
+      const variety    = parts[1].trim(); // Amira / Sky / Clarita
+      const typeA      = toNumberSafe(parts[2]); // Grade A – punnets
+      const typeB      = toNumberSafe(parts[3]); // Grade B – kg
+
+      lineIndex++;
+
+      outRows.push([
+        date,
+        greenhouse,
+        variety,
+        typeA,
+        typeB,
+        filler,
+        notes,
+        submissionId,
+        lineIndex
+      ]);
+    }
+  }
+
+  if (outRows.length &gt; 0) {
+    outSheet
+      .getRange(2, 1, outRows.length, outHeaders.length)
+      .setValues(outRows);
+  }
+}
+
+// עזר להמרת טקסט למספר בצורה בטוחה
+function toNumberSafe(value) {
+  if (typeof value === 'number') {
+    return value;
+  }
+  if (!value) {
+    return 0;
+  }
+  // ניקוי תווים שאינם ספרות/נקודה/מינוס
+  const cleaned = value.toString().replace(/[^\d.\-]/g, '');
+  const num = Number(cleaned);
+  return isNaN(num) ? 0 : num;
+}
+</code></pre>
+                    </div>
+                </details>
             </div>
         </details>
 
         <details>
-            <summary>5.2 sendDailyHarvestEmail – מייל סיכום יומי</summary>
+            <summary>5.2 sendWeeklyHarvestEmail – מייל סיכום שבועי</summary>
             <div class="details-body">
-                <p><strong>מטרה:</strong> לשלוח פעם ביום סיכום קטיף ל-מנהלים, עם השוואה ל-7 ימים אחרונים.</p>
+                <p><strong>מטרה:</strong> פעם בשבוע (חמישי בערב) לסכם את
+                    השבוע האחרון:</p>
                 <ul>
-                    <li>קובע את <code>today</code> לפי אזור הזמן של הגיליון, וממיר לפורמט תאריך אחיד.</li>
-                    <li>קורא את Harvest_KPI, ומסכם לכל חממה:
-                        <ul>
-                            <li>סך ק"ג היום (כולל פירוק לסוג א/ב).</li>
-                            <li>סך כל הקטיף היום בכל החממות.</li>
-                        </ul>
-                    </li>
-                    <li>אם אין אף קטיף ליום הזה – הפונקציה יוצאת ללא שליחת מייל.</li>
-                    <li>קורא את Greenhouse_Performance כדי לקבל סך ק"ג ב-7 ימים אחרונים לכל חממה.</li>
-                    <li>מחשב לכל חממה:
-                        <br>ממוצע יומי בשבוע האחרון + אחוז מעל/מתחת לממוצע.</li>
-                    <li>בונה טקסט מייל קריא (Subject + Body) ושולח לכתובות שהוגדרו בקוד.</li>
+                    <li>כמה פטל (ק"ג) נקטף מכל חממה בשבוע האחרון.</li>
+                    <li>אחוז סוג ב' (משקלית) בכל חממה בשבוע האחרון.</li>
+                    <li>כמה תות נקטף השבוע וכמה אוסנת (ק"ג, לפי נספקים+סוג ב').</li>
+                    <li>צירוף לינק לחוברת ההטמעה המלאה.</li>
                 </ul>
-                <a class="link-btn" href="LINK_TO_SENDDAILYHARVESTEMAIL_CODE" target="_blank">
-                    צפייה בקוד המלא של sendDailyHarvestEmail
-                </a>
-                <div class="callout">
-                    ניתן להרחיב את הפונקציה כך שתשלח גם SMS / WhatsApp דרך שירות חיצוני (Twilio/Make), כל עוד שומרים על אותו עיקרון: לא שולחים אם לא היה קטיף באותו היום.
-                </div>
+
+                <details id="code-weekly">
+                    <summary>קוד מלא – sendWeeklyHarvestEmail + פונקציות עזר</summary>
+                    <div class="details-body">
+<pre><code>// ממיר תא (תאריך או טקסט) לאובייקט Date בגראנולריות של יום
+function toJsDate(value) {
+  if (!value) return null;
+
+  if (value instanceof Date) {
+    return new Date(value.getFullYear(), value.getMonth(), value.getDate());
+  }
+
+  const str = value.toString().trim();
+  if (!str) return null;
+
+  // פורמט YYYY-MM-DD (מגיע לעתים מטבלאות תות/אוסנת)
+  if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+    const [y, m, d] = str.split('-');
+    return new Date(Number(y), Number(m) - 1, Number(d));
+  }
+
+  // פורמט DD/MM/YYYY (מגיע מ-Harvest_KPI לפטל)
+  if (/^\d{2}\/\d{2}\/\d{4}/.test(str)) {
+    const [d, m, y] = str.split('/');
+    return new Date(Number(y), Number(m) - 1, Number(d));
+  }
+
+  const parsed = new Date(str);
+  if (isNaN(parsed.getTime())) {
+    return null;
+  }
+  return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+}
+
+// מאתר שורת כותרות ב-Harvest_KPI על פי רשימת כותרות חובה
+function findHeaderRow(values, requiredHeaders) {
+  for (let r = 0; r &lt; values.length; r++) {
+    const row = values[r].map(v =&gt; (v || '').toString().trim());
+    const allFound = requiredHeaders.every(h =&gt; row.indexOf(h) !== -1);
+    if (allFound) {
+      return { rowIndex: r, header: values[r] };
+    }
+  }
+  throw new Error('לא נמצאה שורת כותרות מתאימה ב-Harvest_KPI');
+}
+
+// שליחת מייל סיכום שבועי (להפעיל בטריגר זמן, פעם בשבוע)
+function sendWeeklyHarvestEmail() {
+  const ss = SpreadsheetApp.getActive();
+  const tz = ss.getSpreadsheetTimeZone() || Session.getScriptTimeZone();
+
+  const today = new Date();
+  const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const startDate = new Date(endDate);
+  startDate.setDate(startDate.getDate() - 6); // 7 ימים אחורה כולל היום
+
+  const harvestKpiSheet = ss.getSheetByName('Harvest_KPI');
+  if (!harvestKpiSheet) {
+    Logger.log('לא נמצא הגיליון Harvest_KPI');
+    return;
+  }
+
+  const allValues = harvestKpiSheet.getDataRange().getValues();
+  if (allValues.length &lt; 3) {
+    Logger.log('אין מספיק נתונים ב-Harvest_KPI');
+    return;
+  }
+
+  // --- 1. פטל לפי חממות (מתוך טבלת ה-KPI הראשית) ---
+
+  const requiredHeaders = ['תאריך הקטיף', 'חממה', 'סך ק"ג כולל', '% סוג ב'];
+  const headerInfo = findHeaderRow(allValues, requiredHeaders);
+  const headerRowIndex = headerInfo.rowIndex;
+  const header = headerInfo.header;
+
+  const colDate       = header.indexOf('תאריך הקטיף');
+  const colGreenhouse = header.indexOf('חממה');
+  const colTotalKg    = header.indexOf('סך ק"ג כולל');
+  const colPctB       = header.indexOf('% סוג ב');
+
+  const byGreenhouse = {};
+  let totalRaspKgWeek = 0;
+  let totalRaspBKgWeek = 0;
+
+  for (let i = headerRowIndex + 1; i &lt; allValues.length; i++) {
+    const row = allValues[i];
+    const date = toJsDate(row[colDate]);
+    if (!date) continue;
+
+    if (date &lt; startDate || date &gt; endDate) {
+      continue; // מחוץ לחלון השבועי
+    }
+
+    const gh = row[colGreenhouse];
+    if (!gh) continue;
+
+    const totalKg = Number(row[colTotalKg]) || 0;
+    const pctB    = Number(row[colPctB]) || 0;
+    const bKg     = totalKg * (pctB / 100);
+
+    if (!byGreenhouse[gh]) {
+      byGreenhouse[gh] = { totalKg: 0, totalBKg: 0 };
+    }
+
+    byGreenhouse[gh].totalKg  += totalKg;
+    byGreenhouse[gh].totalBKg += bKg;
+
+    totalRaspKgWeek  += totalKg;
+    totalRaspBKgWeek += bKg;
+  }
+
+  const greenhouseNames = Object.keys(byGreenhouse).sort();
+
+  if (greenhouseNames.length === 0) {
+    Logger.log('אין נתוני פטל בשבוע האחרון – אין מה לשלוח');
+    return;
+  }
+
+  // --- 2. תות ואוסנת מתוך טבלאות הצד ב-Harvest_KPI ---
+
+  const PUNNETS_PER_KG = 8;   // 1 ק"ג = 8 נספקים
+
+  const lastRow = harvestKpiSheet.getLastRow();
+  const firstDataRow = 3;     // שורת הנתונים הראשונה אחרי הכותרת (לפי המבנה הנוכחי)
+
+  let strawberryKgWeek = 0;
+  let osnatKgWeek = 0;
+
+  if (lastRow >= firstDataRow) {
+    const numRows = lastRow - firstDataRow + 1;
+
+    // נתוני תות (עמודות P-Q-R = 16-18)
+    const strawberryRange = harvestKpiSheet.getRange(firstDataRow, 16, numRows, 3).getValues();
+    strawberryRange.forEach(r =&gt; {
+      const d = toJsDate(r[0]);
+      if (!d || d &lt; startDate || d &gt; endDate) return;
+      const punnetsA = Number(r[1]) || 0;
+      const kgB      = Number(r[2]) || 0;
+      strawberryKgWeek += (punnetsA / PUNNETS_PER_KG) + kgB;
+    });
+
+    // נתוני אוסנת (עמודות T-U-V = 20-22)
+    const osnatRange = harvestKpiSheet.getRange(firstDataRow, 20, numRows, 3).getValues();
+    osnatRange.forEach(r =&gt; {
+      const d = toJsDate(r[0]);
+      if (!d || d &lt; startDate || d &gt; endDate) return;
+      const punnetsA = Number(r[1]) || 0;
+      const kgB      = Number(r[2]) || 0;
+      osnatKgWeek += (punnetsA / PUNNETS_PER_KG) + kgB;
+    });
+  }
+
+  // --- 3. בניית גוף המייל ---
+
+  function fmtDate(d) {
+    return Utilities.formatDate(d, tz, 'dd/MM/yyyy');
+  }
+
+  const lines = [];
+  lines.push('סיכום קטיף שבועי – ' + fmtDate(startDate) + ' עד ' + fmtDate(endDate));
+  lines.push('');
+  lines.push('סה"כ פטל בכל החממות השבוע: ' +
+             totalRaspKgWeek.toFixed(1) + ' ק"ג' +
+             ' (מתוכם סוג ב\' ' +
+             totalRaspBKgWeek.toFixed(1) + ' ק"ג, ' +
+             (totalRaspKgWeek ? Math.round(totalRaspBKgWeek / totalRaspKgWeek * 100) : 0) +
+             '%)');
+  lines.push('');
+  lines.push('פירוט פטל לפי חממה:');
+  lines.push('-----------------------');
+
+  greenhouseNames.forEach(gh =&gt; {
+    const d = byGreenhouse[gh];
+    const totalKg = d.totalKg;
+    const bKg = d.totalBKg;
+    const pctB = totalKg ? (bKg / totalKg) * 100 : 0;
+
+    lines.push(
+      gh + ': ' +
+      totalKg.toFixed(1) + ' ק"ג סה"כ, ' +
+      bKg.toFixed(1) + ' ק"ג סוג ב\' (' +
+      Math.round(pctB) + '%)'
+    );
+  });
+
+  lines.push('');
+  lines.push('קטיף נוסף השבוע:');
+  lines.push('  תות:   ' + strawberryKgWeek.toFixed(1) + ' ק"ג (נספקים + סוג ב\')');
+  lines.push('  אוסנת: ' + osnatKgWeek.toFixed(1)     + ' ק"ג (נספקים + סוג ב\')');
+
+  lines.push('');
+  lines.push('לצפייה בנתונים המלאים:');
+  lines.push('https://docs.google.com/spreadsheets/d/1JS5ZPejDNjVlq-Qk9R0Cncb19vuJ18Gsf4A99WSscSE/edit');
+
+  const recipients = 'danielnadav95@gmail.com,Ofer.petel@gmail.com';
+  const subject = 'סיכום קטיף שבועי – ' + fmtDate(startDate) + '–' + fmtDate(endDate);
+  const body = lines.join('\n');
+
+  MailApp.sendEmail({
+    to: recipients,
+    subject: subject,
+    body: body
+  });
+
+  Logger.log('נשלח סיכום שבועי ל: ' + recipients);
+}
+</code></pre>
+                    </div>
+                </details>
+            </div>
+        </details>
+    </section>
+
+    <!-- Email summary description -->
+    <section id="email-summary">
+        <h2>6. מה נשלח במייל הסיכום השבועי?</h2>
+
+        <details open>
+            <summary>מבנה המייל והקשר ל-Greenhouse_Performance</summary>
+            <div class="details-body">
+                <ul>
+                    <li><strong>שורת כותרת:</strong> "סיכום קטיף שבועי – DD/MM/YYYY–DD/MM/YYYY".</li>
+                    <li><strong>שורה כללית:</strong> סך כל ק"ג הפטל שנקטפו השבוע בכל החממות, כולל פירוק לסוג ב' (ק"ג ואחוז).</li>
+                    <li><strong>בלוק לפי חממה:</strong> לכל חממה:
+                        <br>סה"כ ק"ג בשבוע האחרון + כמה מתוכם סוג ב' ואחוז סוג ב' המשקלי.</li>
+                    <li><strong>קטיף תות ואוסנת:</strong> סך ק"ג השבוע של תות ואוסנת
+                        (נסמך על טבלאות הצד ב-Harvest_KPI, תוך המרת נספקים לק"ג לפי 1 ק"ג = 8 נספקים).</li>
+                    <li><strong>קישור לחוברת:</strong> לינק ישיר לחוברת "מעקב קטיף פטל – #הטמעה#".</li>
+                </ul>
+                <p>הנתונים לבלוקי הפטל נגזרים ישירות מטבלת ה-KPI הראשית.
+                    <br>Greenhouse_Performance נותן הקשר נוסף (דירוג חממות, 30 יום וכו'),
+                    אך המייל עצמו מסתמך על החישוב השבועי שמבוצע בקוד.</p>
             </div>
         </details>
     </section>
 
     <!-- Triggers -->
     <section id="triggers">
-        <h2>6. טריגרים – מתי האוטומציות רצות</h2>
+        <h2>7. טריגרים – מתי ומה רץ</h2>
 
         <details open>
-            <summary>סוגי הטריגרים המוגדרים במערכת</summary>
+            <summary>הגדרת הטריגרים המומלצת</summary>
             <div class="details-body">
                 <ul>
-                    <li><strong>טריגר זמן יומי</strong> – מפעיל את <code>sendDailyHarvestEmail</code> פעם ביום, לדוגמה בין 20:00–21:00.</li>
-                    <li><strong>הרצה ידנית / לפי הצורך</strong> – <code>rebuildHarvestData</code> רצה לפי דרישה (כפתור "הפעלה" ב-Apps Script או טריגר זמן תקופתי אם תרצה).</li>
+                    <li><strong>rebuildHarvestData</strong> –
+                        הרצה ידנית בעת הצורך (או טריגר זמן יומי בשעת לילה קבועה,
+                        לפני הטריגר השבועי).</li>
+                    <li><strong>sendWeeklyHarvestEmail</strong> –
+                        טריגר זמן שבועי, למשל:
+                        <br>אחד לשבוע, יום חמישי, חלון שעה 20:00–21:00 (לפי אזור הזמן של הגיליון).</li>
                 </ul>
-                <p>אפשר להוסיף טריגר זמן נוסף ל-<code>rebuildHarvestData</code> פעם ביום, לפני שליחת המייל, כדי לוודא שהנתונים בוודאות מעודכנים.</p>
             </div>
         </details>
 
@@ -505,18 +895,19 @@
             <summary>איך מוסיפים או משנים טריגר ב-Apps Script</summary>
             <div class="details-body">
                 <ol>
-                    <li>נכנסים לפרויקט Apps Script המחובר לגיליון.</li>
-                    <li>בצד שמאל בוחרים <strong>"מפעילים"</strong> (Triggers).</li>
+                    <li>נכנסים לפרויקט ה-Apps Script המחובר לחוברת.</li>
+                    <li>בצד שמאל בוחרים <strong>"מפעילים" (Triggers)</strong>.</li>
                     <li>לוחצים על <strong>"הוספת טריגר"</strong>.</li>
                     <li>בוחרים:
                         <ul>
-                            <li>פונקציה להפעלה – למשל <code>sendDailyHarvestEmail</code>.</li>
-                            <li>סוג טריגר – מופעל לפי זמן (Time-driven).</li>
-                            <li>תדירות – יומי.</li>
+                            <li>פונקציה – <code>sendWeeklyHarvestEmail</code>.</li>
+                            <li>סוג אירוע – Time-driven.</li>
+                            <li>תדירות – Weekly.</li>
+                            <li>יום – Thursday.</li>
                             <li>טווח שעה – למשל 20:00–21:00.</li>
                         </ul>
                     </li>
-                    <li>מאשרים הרשאות בפעם הראשונה (גישה לגיליון + גישה לשליחת מייל).</li>
+                    <li>מאשרים הרשאות בפעם הראשונה (גישה לגיליונות + לשליחת מיילים).</li>
                 </ol>
             </div>
         </details>
@@ -524,16 +915,19 @@
 
     <!-- Maintenance -->
     <section id="maintenance">
-        <h2>7. תחזוקה, הרחבות ותקלות נפוצות</h2>
+        <h2>8. תחזוקה, הרחבות ושכפול המערכת</h2>
 
         <details open>
-            <summary>מה מותר ומה כדאי לא לגעת?</summary>
+            <summary>מה מותר ומה לא מומלץ לגעת בו</summary>
             <div class="details-body">
                 <ul>
-                    <li><strong>מותר:</strong> להוסיף גיליונות חדשים לניתוחים וגרפים, שמבוססים על Harvest_KPI ו-Greenhouse_Performance.</li>
-                    <li><strong>מותר:</strong> להוסיף זנים חדשים / חממות חדשות דרך <code>Config_Greenhouses</code>, כל עוד נשמר הפורמט.</li>
-                    <li><strong>לא מומלץ:</strong> לערוך ידנית נתונים ב-Raw_Responses או ב-Harvest_Data – עלול לשבור עקביות בין הטופס לאוטומציות.</li>
-                    <li><strong>לא כדאי:</strong> לשנות שמות גליונות או כותרות עמודות בלי לעדכן גם את הקוד.</li>
+                    <li><strong>מותר:</strong> להוסיף גיליונות חדשים לניתוחים, גרפים ודשבורדים
+                        שמבוססים על Harvest_KPI ו-Greenhouse_Performance.</li>
+                    <li><strong>מותר:</strong> להרחיב את <code>Config_Greenhouses</code>
+                        (חממות חדשות, שינוי אורך מטר רץ וכו').</li>
+                    <li><strong>לא מומלץ:</strong> לערוך ידנית נתונים ב-Raw_Responses או ב-Harvest_Data.</li>
+                    <li><strong>לא כדאי:</strong> לשנות שמות גיליונות או כותרות עמודות
+                        בלי לעדכן את הקוד ואת נוסחאות ה-IMPORTRANGE.</li>
                 </ul>
             </div>
         </details>
@@ -542,26 +936,26 @@
             <summary>פתרון תקלות בסיסי</summary>
             <div class="details-body">
                 <ul>
-                    <li>אם מתקבלת שגיאה בסגנון "לא נמצאה כותרת עמודה בשם ...":
-                        <br>בדוק שהכותרת בגליון תואמת בדיוק לשם שמופיע בקוד (כולל רווחים).</li>
-                    <li>אם Harvest_Data ריק:
-                        <br>להריץ ידנית את <code>rebuildHarvestData</code> ולבדוק את יומן הביצוע (Execution log) לאיתור השורה הבעייתית.</li>
-                    <li>אם לא מתקבל מייל:
-                        <br>לבדוק ב-Apps Script תחת "מפעילים" אם הטריגר רץ, ואם יש שגיאה בפונקציה <code>sendDailyHarvestEmail</code>.</li>
+                    <li>שגיאה בסגנון "לא נמצאה כותרת עמודה בשם ...":
+                        <br>לבדוק שהכותרת בגליון תואמת בדיוק לשם בקוד (כולל רווחים וסימני פיסוק).</li>
+                    <li>Harvest_Data ריק:
+                        <br>להריץ ידנית את <code>rebuildHarvestData</code> ולבדוק את Execution log לאיתור שורות בעייתיות.</li>
+                    <li>אין מייל שבועי:
+                        <br>לבדוק בלשונית "מפעילים" האם הטריגר רץ, ואם קיימת שגיאה ב-<code>sendWeeklyHarvestEmail</code>.</li>
                 </ul>
             </div>
         </details>
 
         <details>
-            <summary>איך לשכפל את המערכת לעסק נוסף</summary>
+            <summary>שכפול המערכת לעסק נוסף</summary>
             <div class="details-body">
                 <ol>
-                    <li>שכפול גיליון גוגל + התאמת טבלת <code>Config_Greenhouses</code> לשמות החממות והשטחים החדשים.</li>
-                    <li>יצירת עותק של פרויקט ה-Apps Script וחיבורו לגיליון החדש.</li>
-                    <li>עדכון כתובות המייל בקוד <code>sendDailyHarvestEmail</code>.</li>
-                    <li>יצירת טופס Fillout חדש שמכוון לגיליון העותק (או Google Form אם מחליטים לשנות כלי).</li>
+                    <li>משכפלים את חוברת ההטמעה ואת חוברת ה-Picking report.</li>
+                    <li>מעדכנים את <code>Config_Greenhouses</code> לחממות החדשות.</li>
+                    <li>יוצרים עותק של פרויקט Apps Script ומקשרים אותו לחוברת ההטמעה החדשה.</li>
+                    <li>מעדכנים את כתובות המייל ב-<code>sendWeeklyHarvestEmail</code>.</li>
+                    <li>יוצרים טופס Fillout חדש שמחובר לחוברת ה-Picking report החדשה.</li>
                 </ol>
-                <p>הגישה המומלצת: להשאיר את הלוגיקה והמבנה זהים ככל האפשר, ולהחליף רק קונפיגורציה (חממות, שטחים, נמעני מייל).</p>
             </div>
         </details>
     </section>
