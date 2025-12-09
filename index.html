@@ -4,8 +4,16 @@
     <meta charset="UTF-8">
     <title>מערכת Harvest – הפטל של עופר</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Mermaid for data-flow diagram -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true, theme: 'neutral', flowchart: { curve: 'basis' }});</script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'neutral',
+            flowchart: { curve: 'basis' }
+        });
+    </script>
     
     <style>
         :root {
@@ -19,6 +27,7 @@
             --success: #10B981;
             --warning-bg: #FFF7ED;
             --warning-border: #FDBA74;
+            --badge-bg: #E5E7EB;
         }
 
         body {
@@ -40,8 +49,18 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        header h1 { margin: 0; font-size: 2.2rem; font-weight: 700; letter-spacing: -0.025em; }
-        header p { margin: 10px 0 0; font-size: 1.1rem; opacity: 0.9; }
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        header p {
+            margin: 10px 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
 
         /* Container */
         .container {
@@ -76,7 +95,10 @@
             transition: all 0.2s;
         }
 
-        .nav a:hover { background: var(--primary); color: var(--white); }
+        .nav a:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
 
         /* Content Blocks */
         section {
@@ -88,15 +110,39 @@
             border: 1px solid rgba(229, 231, 235, 0.5);
         }
 
-        h2 { 
-            margin-top: 0; 
-            color: var(--primary); 
-            border-bottom: 2px solid #E5E7EB; 
+        h2 {
+            margin-top: 0;
+            color: var(--primary);
+            border-bottom: 2px solid #E5E7EB;
             padding-bottom: 10px;
             font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        h3 { margin-top: 25px; font-size: 1.1rem; color: #374151; }
+
+        h3 {
+            margin-top: 25px;
+            font-size: 1.1rem;
+            color: #374151;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            background: var(--badge-bg);
+            color: #111827;
+        }
+
+        code {
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            font-size: 0.85rem;
+            background: #EEF2FF;
+            padding: 1px 5px;
+            border-radius: 4px;
+        }
 
         /* Platforms Grid */
         .platform-grid {
@@ -111,12 +157,28 @@
             border-radius: 12px;
             padding: 20px;
             background: #FAFAFA;
-            transition: transform 0.2s;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
         }
 
-        .platform:hover { transform: translateY(-2px); border-color: var(--primary); }
-        .platform strong { display: block; font-size: 1.1rem; margin-bottom: 8px; color: var(--primary); }
-        .platform div { font-size: 0.9rem; color: var(--muted); margin-bottom: 15px; min-height: 40px; }
+        .platform:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .platform strong {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+            color: var(--primary);
+        }
+
+        .platform div {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin-bottom: 14px;
+            min-height: 40px;
+        }
 
         .link-btn {
             display: inline-block;
@@ -133,7 +195,10 @@
             transition: all 0.2s;
         }
 
-        .link-btn:hover { background: var(--primary); color: var(--white); }
+        .link-btn:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
 
         /* Flowchart Container */
         .mermaid-container {
@@ -152,11 +217,13 @@
             margin: 16px 0;
             font-size: 0.95rem;
         }
+
         .callout.warning {
             background: var(--warning-bg);
             border-right: 4px solid var(--warning-border);
             color: #9A3412;
         }
+
         .callout.info {
             background: #EFF6FF;
             border-right: 4px solid var(--primary);
@@ -197,7 +264,9 @@
             transition: background 0.2s;
         }
 
-        .copy-btn:hover { background: rgba(255,255,255,0.2); }
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
 
         /* Email Preview Card */
         .email-preview {
@@ -209,14 +278,31 @@
             max-width: 600px;
             margin: 20px auto;
         }
+
         .email-header {
             border-bottom: 1px solid #D1D5DB;
             padding-bottom: 10px;
             margin-bottom: 15px;
         }
-        .email-meta { font-size: 0.85rem; color: #6B7280; margin-bottom: 4px; }
-        .email-body { font-size: 0.95rem; color: #111827; white-space: pre-wrap; line-height: 1.5; }
-        .email-highlight { background: #FEF3C7; padding: 2px 4px; border-radius: 2px; }
+
+        .email-meta {
+            font-size: 0.85rem;
+            color: #6B7280;
+            margin-bottom: 4px;
+        }
+
+        .email-body {
+            font-size: 0.95rem;
+            color: #111827;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        .email-highlight {
+            background: #FEF3C7;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
 
         /* Details/Summary */
         details {
@@ -225,6 +311,7 @@
             border-radius: 8px;
             margin-bottom: 10px;
         }
+
         summary {
             padding: 12px 16px;
             cursor: pointer;
@@ -232,7 +319,11 @@
             list-style: none;
             position: relative;
         }
-        summary::-webkit-details-marker { display: none; }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
         summary::after {
             content: "+";
             position: absolute;
@@ -240,14 +331,30 @@
             font-weight: bold;
             color: var(--primary);
         }
-        details[open] summary::after { content: "-"; }
-        .details-content { padding: 16px; border-top: 1px solid #E5E7EB; background: #fff; border-radius: 0 0 8px 8px; }
+
+        details[open] summary::after {
+            content: "-";
+        }
+
+        .details-content {
+            padding: 16px;
+            border-top: 1px solid #E5E7EB;
+            background: #fff;
+            border-radius: 0 0 8px 8px;
+        }
 
         footer {
             text-align: center;
             padding: 40px 20px;
             color: var(--muted);
             font-size: 0.9rem;
+        }
+
+        .top-link {
+            display: block;
+            text-align: left;
+            margin-top: 20px;
+            font-size: 0.85rem;
         }
     </style>
 </head>
@@ -267,96 +374,129 @@
         <a href="#performance">תובנות ו-KPI</a>
         <a href="#automation">סקריפטים</a>
         <a href="#email-preview">דוגמת מייל</a>
-        <a href="#maintenance">תחזוקה</a>
+        <a href="#maintenance">תחזוקה וטריגרים</a>
     </nav>
 
+    <!-- 1. Overview -->
     <section id="overview">
         <h2>1. גישה מהירה לרכיבים</h2>
         <div class="platform-grid">
             <div class="platform">
-                <strong>📲 קלט בשטח (Fillout)</strong>
+                <strong>📲 קלט בשטח (Fillout) <span class="badge">קלט</span></strong>
                 <div>טופס דיגיטלי למילוי ע"י עובדים בסיום יום קטיף.</div>
                 <a class="link-btn" href="https://forms.fillout.com/t/f1b1uSZiHius" target="_blank">פתח טופס</a>
             </div>
             <div class="platform">
-                <strong>📂 מאגר תשובות גולמי</strong>
-                <div>גיליון אליו מתנקזות כל התשובות מהטופס (Backup).</div>
+                <strong>📂 מאגר תשובות גולמי <span class="badge">מקור נתונים</span></strong>
+                <div>גיליון אליו מתנקזות כל התשובות מהטופס (Backup + מקור ל-IMPORTRANGE).</div>
                 <a class="link-btn" href="https://docs.google.com/spreadsheets/d/1Zi0tJO4om1sPwmA8dTslF1knk7Fi_iHBJ97VBhpZAVk/edit?usp=sharing" target="_blank">פתח גיליון תשובות</a>
             </div>
             <div class="platform">
-                <strong>📊 דשבורד ראשי וניהול</strong>
+                <strong>📊 חוברת ראשית וניהול <span class="badge">עיבוד + דשבורד</span></strong>
                 <div>המוח של המערכת: עיבוד נתונים, KPI, גרפים וסקריפטים.</div>
                 <a class="link-btn" href="https://docs.google.com/spreadsheets/d/1JS5ZPejDNjVlq-Qk9R0Cncb19vuJ18Gsf4A99WSscSE/edit?gid=1085857775#gid=1085857775" target="_blank">פתח חוברת ראשית</a>
             </div>
         </div>
     </section>
 
+    <!-- 2. Flow -->
     <section id="flow">
         <h2>2. תרשים זרימת נתונים</h2>
-        <p>התהליך אוטומטי לחלוטין מרגע שליחת הטופס ועד קבלת המייל השבועי.</p>
+        <p>התהליך אוטומטי מרגע שליחת הטופס ועד קבלת המייל השבועי למנהלים.</p>
         
         <div class="mermaid-container">
             <div class="mermaid">
                 flowchart TD
                     A[עובד בשטח] -->|מילוי בטלפון| B(טופס Fillout)
-                    B -->|שמירה אוטומטית| C[גיליון תשובות חיצוני<br>Raw Data]
-                    C -.->|IMPORTRANGE| D[חוברת ראשית<br>גיליון Raw_Responses]
-                    D -->|Rebuild Script| E[טבלת נתונים מעובדת<br>Harvest_Data]
-                    E -->|נוסחאות| F[גיליונות ניתוח<br>Harvest_KPI / Greenhouse Perf]
-                    F -->|טריגר שבועי| G[סקריפט מייל<br>sendWeeklyHarvestEmail]
+                    B -->|שמירה אוטומטית| C[גיליון תשובות חיצוני<br/>Raw Data]
+                    C -.->|IMPORTRANGE| D[חוברת ראשית<br/>גיליון <code>Raw_Responses</code>]
+                    D -->|טריגר שינוי נתונים\nrebuildHarvestData| E[טבלת נתונים מעובדת<br/>גיליון <code>Harvest_Data</code>]
+                    E -->|נוסחאות| F[גיליונות ניתוח<br/>Harvest_KPI / Greenhouse_Performance]
+                    F -->|טריגר שבועי\nsendWeeklyHarvestEmail| G[סקריפט מייל]
                     G -->|שליחה| H[מייל סיכום למנהלים]
             </div>
         </div>
+
+        <details>
+            <summary>פירוט קצר לפי שלבים</summary>
+            <div class="details-content">
+                <ol>
+                    <li>העובד ממלא טופס Fillout מהטלפון.</li>
+                    <li>Fillout רושם שורה חדשה בגיליון תשובות חיצוני (Google Sheets).</li>
+                    <li>בגיליון הראשי, <code>Raw_Responses</code> מושך את הנתונים באמצעות <code>IMPORTRANGE</code>.</li>
+                    <li>טריגר שינוי נתונים מפעיל את <code>rebuildHarvestData</code>, שמנקה ובונה מחדש את <code>Harvest_Data</code>.</li>
+                    <li>גיליונות <code>Harvest_KPI</code> ו-<code>Greenhouse_Performance</code> מבצעים חישובים מעל <code>Harvest_Data</code>.</li>
+                    <li>טריגר שבועי מפעיל את <code>sendWeeklyHarvestEmail</code>, שמסכם שבוע ושולח מייל למנהלים.</li>
+                </ol>
+            </div>
+        </details>
     </section>
 
+    <!-- 3. Components -->
     <section id="components">
         <h2>3. מבנה החוברת הראשית</h2>
         
         <div class="callout warning">
-            <strong>⚠️ נקודה קריטית לתחזוקה:</strong>
+            <strong>⚠️ נקודה קריטית לתחזוקה:</strong><br>
             הנתונים נכנסים לגיליון <code>Raw_Responses</code> באמצעות נוסחת <code>IMPORTRANGE</code>.
-            אם מחליפים את "גיליון התשובות החיצוני", יש לעדכן את ה-URL בתוך הנוסחה בתא A1 (או היכן שהיא ממוקמת) ולאשר גישה מחדש.
+            אם מחליפים את "גיליון התשובות החיצוני", יש לעדכן את ה-URL בתוך הנוסחה (בד"כ בתא A1) ולאשר גישה מחדש.
         </div>
 
         <details open>
             <summary>פירוט הגיליונות</summary>
             <div class="details-content">
                 <ul>
-                    <li><strong>Raw_Responses:</strong> מעתיק את המידע הגולמי (כפי שהוא) מגיליון התשובות.</li>
-                    <li><strong>Harvest_Data:</strong> תוצר של הסקריפט. טבלה "שטוחה" ומסודרת המאפשרת יצירת Pivot Tables וגרפים בקלות.</li>
-                    <li><strong>Harvest_KPI:</strong> טבלת ציר (Pivot) וחישובים יומיים. כאן מתבצעים החישובים של אחוז סוג ב' וסך ק"ג.</li>
-                    <li><strong>Config_Greenhouses:</strong> הגדרות קבועות (שמות חממות, שטח, זנים).</li>
+                    <li><strong><code>Raw_Responses</code> <span class="badge">קריאה בלבד</span></strong> – מעתיק את המידע הגולמי כפי שהוא מקובץ התשובות החיצוני.</li>
+                    <li><strong><code>Harvest_Data</code> <span class="badge">נבנה אוטומטית</span></strong> – תוצר של הסקריפט; טבלה "שטוחה" ומסודרת המאפשרת Pivot, סינונים וגרפים.</li>
+                    <li><strong><code>Harvest_KPI</code></strong> – חישובים יומיים לפי תאריך × חממה × זן (סך ק"ג, אחוז סוג ב', יחידות נוספות).</li>
+                    <li><strong><code>Greenhouse_Performance</code></strong> – דשבורד ניהולי: סכומים שבועיים/חודשיים, השוואה בין חממות ומגמות.</li>
+                    <li><strong><code>Config_Greenhouses</code> <span class="badge">קונפיגורציה</span></strong> – הגדרות קבועות (שמות חממות, שטח, זנים, מטר רץ וכו').</li>
                 </ul>
             </div>
         </details>
     </section>
 
+    <!-- 4. Performance -->
     <section id="performance">
         <h2>4. תובנות עסקיות: Greenhouse_Performance</h2>
-        <p>גיליון זה הוא ה"דשבורד" הניהולי. הוא לא מציג רק מספרים, אלא עונה על שאלות עסקיות:</p>
+        <p>גיליון זה הוא ה"דשבורד" הניהולי – less על נתון בודד, more על תמונה כוללת והתנהגות לאורך זמן.</p>
         
         <div class="platform-grid">
             <div class="platform" style="background: #F0FDF4; border-color: #BBF7D0;">
                 <strong>🚨 זיהוי איכות (סוג ב')</strong>
-                <div>האם חממה מסוימת חורגת באופן קבוע באחוז סוג ב'? (מעיד על מזיקים, השקיה לא טובה או קטיף רשלני).</div>
+                <div>האם חממה מסוימת חורגת באופן קבוע באחוז סוג ב'? זה יכול להצביע על מזיקים, בעיות השקיה או קטיף רשלני.</div>
             </div>
             <div class="platform" style="background: #EFF6FF; border-color: #BFDBFE;">
-                <strong>⚖️ תפוקה (ק"ג)</strong>
-                <div>השוואה בין חממות זהות. האם חממה 3 מניבה פחות מחממה 4 באותו שבוע?</div>
+                <strong>⚖️ השוואת תפוקה</strong>
+                <div>השוואה בין חממות בעלות מאפיינים דומים. האם חממה 3 מניבה פחות מחממה 4 באותו שבוע?</div>
             </div>
             <div class="platform" style="background: #FEFCE8; border-color: #FEF08A;">
                 <strong>📅 מגמות (30 יום)</strong>
-                <div>האם אנחנו במגמת עלייה או ירידה בכמויות? עוזר לתכנן כוח אדם לשבוע הבא.</div>
+                <div>בדיקת מגמת עלייה/ירידה בכמויות לאורך 30 יום. מאפשר היערכות לכוח אדם, שיווק ותכנון גידול.</div>
             </div>
         </div>
     </section>
 
+    <!-- 5. Automation / Scripts -->
     <section id="automation">
         <h2>5. סקריפטים ואוטומציה (Apps Script)</h2>
-        <p>שני הסקריפטים הבאים הם הלב הפועם של המערכת.</p>
+        <p>שני הסקריפטים הבאים מהווים את "הלוגיקה העסקית" של המערכת: האחד מעבד ומנקה את הנתונים, השני שולח סיכום שבועי במייל.</p>
 
         <h3>א. עיבוד נתונים (rebuildHarvestData)</h3>
-        <p>הופך את הטקסט הגולמי מהטופס לטבלה מסודרת עם שורות נפרדות לכל חממה/זן.</p>
+        <p>פונקציה זו הופכת טקסט גולמי מהטופס לטבלה מסודרת עם שורות נפרדות לכל חממה/זן:</p>
+        <ul>
+            <li>קוראת את כל הנתונים מגיליון <code>Raw_Responses</code>.</li>
+            <li>מאתרת עמודות לפי כותרות בעברית (תאריך, שם ממלא הדוח, הערות, טבלת קטיף).</li>
+            <li>מפצלת את הטקסט הרב-שורה לעמודות: חממה, זן, כמות סוג א, כמות סוג ב.</li>
+            <li>כותבת ל-<code>Harvest_Data</code> עם מזהי <code>SubmissionID</code> ו-<code>LineIndex</code> לכל שורה.</li>
+        </ul>
+
+        <div class="callout warning">
+            <strong>מוקש נפוץ:</strong> הפונקציה מתבססת על שמות כותרות העמודות בדיוק כפי שהן מופיעות ב-<code>Raw_Responses</code>.
+            שינוי טקסט בשדה בפלטפורמת Fillout ישנה את הכותרת ועלול לגרום לשגיאה
+            <code>"Column not found: ..."</code>. במקרה כזה יש לעדכן את המחרוזות בקוד או להשיב את הכותרת המקורית.
+        </div>
+
         <div class="code-wrapper">
             <button class="copy-btn" onclick="copyToClipboard('code1')">העתק קוד</button>
 <pre id="code1">
@@ -373,10 +513,10 @@ function rebuildHarvestData() {
   }
 
   const rawData = rawSheet.getDataRange().getValues();
-  if (rawData.length < 2) return; // No data
+  if (rawData.length &lt; 2) return; // No data
 
   const headers = rawData[0];
-  
+
   // Helper to find column index by name
   function colIndex(name) {
     const idx = headers.indexOf(name);
@@ -385,21 +525,27 @@ function rebuildHarvestData() {
   }
 
   // Map columns based on Fillout headers
-  const dateCol   = colIndex('תאריך הקטיף');
-  const nameCol   = colIndex('שם ממלא הדוח');
-  const notesCol  = colIndex('הערות ליום הקטיף (מזג אוויר, בעיות, חממות שלא נקטפו וכו\')');
-  const tableCol  = colIndex('רישום קטיף לפי חממה וזן'); 
+  const dateCol  = colIndex('תאריך הקטיף');
+  const nameCol  = colIndex('שם ממלא הדוח');
+  const notesCol = colIndex('הערות ליום הקטיף (מזג אוויר, בעיות, חממות שלא נקטפו וכו\')');
+  const tableCol = colIndex('רישום קטיף לפי חממה וזן');
 
   // Define Output Headers
   const outHeaders = [
-    'תאריך הקטיף', 'חממה', 'זן', 'כמות סוג א (נספקים)', 
-    'כמות סוג ב (ק"ג)', 'שם ממלא הדוח', 'הערות ליום הקטיף', 
-    'SubmissionID', 'LineIndex'
+    'תאריך הקטיף',
+    'חממה',
+    'זן',
+    'כמות סוג א (נספקים)',
+    'כמות סוג ב (ק"ג)',
+    'שם ממלא הדוח',
+    'הערות ליום הקטיף',
+    'SubmissionID',
+    'LineIndex'
   ];
 
   // Clear old data (keep headers if row 1 exists)
   const lastOutRow = outSheet.getLastRow();
-  if (lastOutRow > 1) {
+  if (lastOutRow &gt; 1) {
     outSheet.getRange(2, 1, lastOutRow - 1, outHeaders.length).clearContent();
   }
   outSheet.getRange(1, 1, 1, outHeaders.length).setValues([outHeaders]);
@@ -407,7 +553,7 @@ function rebuildHarvestData() {
   const outRows = [];
 
   // Iterate raw rows
-  for (let i = 1; i < rawData.length; i++) {
+  for (let i = 1; i &lt; rawData.length; i++) {
     const row = rawData[i];
     const date = row[dateCol];
     const filler = row[nameCol];
@@ -420,32 +566,33 @@ function rebuildHarvestData() {
     let lineIndex = 0;
 
     // Skip internal header of the text block usually
-    for (let j = 1; j < lines.length; j++) {
+    for (let j = 1; j &lt; lines.length; j++) {
       let line = lines[j].trim();
       if (!line) continue;
 
       const parts = line.split(',');
-      if (parts.length < 4) continue;
+      if (parts.length &lt; 4) continue;
 
       outRows.push([
         date,
-        parts[0].trim(), // Greenhouse
-        parts[1].trim(), // Variety
-        toNumberSafe(parts[2]), // Grade A
-        toNumberSafe(parts[3]), // Grade B
+        parts[0].trim(),       // Greenhouse
+        parts[1].trim(),       // Variety
+        toNumberSafe(parts[2]),// Grade A
+        toNumberSafe(parts[3]),// Grade B
         filler,
         notes,
-        i + 1, // Simple ID
+        i + 1,                 // Simple ID: original row + 1 (1-based)
         ++lineIndex
       ]);
     }
   }
 
-  if (outRows.length > 0) {
+  if (outRows.length &gt; 0) {
     outSheet.getRange(2, 1, outRows.length, outHeaders.length).setValues(outRows);
   }
 }
 
+// Helper for safe numeric conversion
 function toNumberSafe(val) {
   if (typeof val === 'number') return val;
   if (!val) return 0;
@@ -456,50 +603,150 @@ function toNumberSafe(val) {
         </div>
 
         <h3>ב. שליחת דוח שבועי (sendWeeklyHarvestEmail)</h3>
-        <p>רץ אוטומטית כל יום חמישי בערב ושולח סיכום מנהלים.</p>
+        <p>פונקציה זו רצה באמצעות טריגר זמן (Time-driven) פעם בשבוע, מסכמת את נתוני ה-Harvest לשבוע האחרון ושולחת מייל ניהולי.</p>
+        <ul>
+            <li>מגדירה טווח תאריכים – 7 ימים אחרונים כולל היום.</li>
+            <li>קוראת את <code>Harvest_KPI</code>, מסכמת לפי חממה וזן.</li>
+            <li>מכינה סיכום כולל + פירוט לפי חממה.</li>
+            <li>שולחת מייל לכתובות שהוגדרו בקוד.</li>
+        </ul>
+
+        <div class="callout info">
+            <strong>הערה:</strong> הקוד הבא הוא תבנית בסיסית. במערכת בפועל רצוי להתאים את מיפוי העמודות ב-<code>Harvest_KPI</code>
+            ואת נוסח המייל לצרכים עסקיים. חשוב לעדכן את רשימת הנמענים לפני הפעלה במערכת חיה.
+        </div>
+
         <div class="code-wrapper">
             <button class="copy-btn" onclick="copyToClipboard('code2')">העתק קוד</button>
 <pre id="code2">
 function sendWeeklyHarvestEmail() {
   const ss = SpreadsheetApp.getActive();
   const tz = ss.getSpreadsheetTimeZone() || Session.getScriptTimeZone();
-  
-  // Define Time Window (Last 7 days)
+
+  // Define Time Window (Last 7 days, including today)
   const today = new Date();
   const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const startDate = new Date(endDate);
-  startDate.setDate(startDate.getDate() - 6); 
+  startDate.setDate(startDate.getDate() - 6);
 
   const kpiSheet = ss.getSheetByName('Harvest_KPI');
-  if (!kpiSheet) return;
+  if (!kpiSheet) {
+    Logger.log('Missing sheet Harvest_KPI');
+    return;
+  }
 
   const data = kpiSheet.getDataRange().getValues();
-  // Assume headers are in row 1 (index 0)
-  // Logic to aggregate data by greenhouse for the date range...
-  // (See full implementation in the project)
+  if (data.length &lt; 2) {
+    Logger.log('No KPI data');
+    return;
+  }
 
-  // NOTE: This function logic relies on column positions in Harvest_KPI.
-  // Ensure 'Strawberry' and 'Osnat' columns are mapped correctly.
+  const headers = data[0];
 
-  const recipients = 'danielnadav95@gmail.com,Ofer.petel@gmail.com';
-  const subject = 'סיכום קטיף שבועי – ' + Utilities.formatDate(startDate, tz, 'dd/MM') + ' עד ' + Utilities.formatDate(endDate, tz, 'dd/MM');
-  
-  // Construct Body...
-  // MailApp.sendEmail(...)
-  Logger.log('Email sent to ' + recipients);
+  // Example column mapping – MUST be adapted to the actual sheet structure
+  const dateColIndex     = headers.indexOf('תאריך');
+  const greenhouseColIdx = headers.indexOf('חממה');
+  const totalKgColIdx    = headers.indexOf('סה"כ ק"ג');
+  const gradeBKgColIdx   = headers.indexOf('ק"ג סוג ב\'');
+
+  if (dateColIndex === -1 || greenhouseColIdx === -1 ||
+      totalKgColIdx === -1 || gradeBKgColIdx === -1) {
+    throw new Error('One or more required columns not found in Harvest_KPI');
+  }
+
+  // Aggregate per greenhouse for the last 7 days
+  const byGreenhouse = {};
+  let totalKgAll = 0;
+  let totalGradeBAll = 0;
+
+  for (let i = 1; i &lt; data.length; i++) {
+    const row = data[i];
+    const dateVal = row[dateColIndex];
+    const ghName  = row[greenhouseColIdx];
+    const totalKg = Number(row[totalKgColIdx]) || 0;
+    const gradeB  = Number(row[gradeBKgColIdx]) || 0;
+
+    if (!ghName || !(dateVal instanceof Date)) continue;
+
+    const d = new Date(dateVal.getFullYear(), dateVal.getMonth(), dateVal.getDate());
+    if (d &lt; startDate || d &gt; endDate) continue;
+
+    if (!byGreenhouse[ghName]) {
+      byGreenhouse[ghName] = { totalKg: 0, gradeB: 0 };
+    }
+
+    byGreenhouse[ghName].totalKg += totalKg;
+    byGreenhouse[ghName].gradeB += gradeB;
+
+    totalKgAll += totalKg;
+    totalGradeBAll += gradeB;
+  }
+
+  if (totalKgAll === 0) {
+    Logger.log('No harvest in the past 7 days, skipping email');
+    return;
+  }
+
+  const totalGradeBPercent =
+    totalKgAll &gt; 0 ? (totalGradeBAll / totalKgAll) * 100 : 0;
+
+  // Build email body
+  let body = '';
+  body += 'סיכום קטיף שבועי – ' +
+          Utilities.formatDate(startDate, tz, 'dd/MM/yyyy') +
+          ' עד ' +
+          Utilities.formatDate(endDate, tz, 'dd/MM/yyyy') + '\n\n';
+
+  body += 'סה"כ פטל בכל החממות השבוע: ' +
+          totalKgAll.toFixed(1) + ' ק"ג\n';
+  body += '(מתוכם סוג ב\': ' +
+          totalGradeBAll.toFixed(1) + ' ק"ג, ' +
+          totalGradeBPercent.toFixed(1) + '%)\n\n';
+  body += '-----------------------\n';
+  body += 'פירוט לפי חממה:\n';
+
+  Object.keys(byGreenhouse).forEach(function(gh) {
+    const ghData = byGreenhouse[gh];
+    const ghPercent =
+      ghData.totalKg &gt; 0 ? (ghData.gradeB / ghData.totalKg) * 100 : 0;
+
+    body += gh + ': ' +
+            ghData.totalKg.toFixed(1) + ' ק"ג סה"כ, ' +
+            ghData.gradeB.toFixed(1) + ' ק"ג סוג ב\' (' +
+            ghPercent.toFixed(1) + '%)\n';
+  });
+
+  body += '\nלצפייה בנתונים המלאים:\n';
+  body += ss.getUrl() + '\n';
+
+  // TODO: Update recipients list before using in production
+  const recipients = 'manager1@example.com,manager2@example.com';
+  const subject = 'סיכום קטיף שבועי – ' +
+    Utilities.formatDate(startDate, tz, 'dd/MM') +
+    ' עד ' +
+    Utilities.formatDate(endDate, tz, 'dd/MM');
+
+  MailApp.sendEmail({
+    to: recipients,
+    subject: subject,
+    body: body
+  });
+
+  Logger.log('Weekly harvest email sent to: ' + recipients);
 }
 </pre>
         </div>
     </section>
 
+    <!-- 6. Email Preview -->
     <section id="email-preview">
-        <h2>6. תוצר סופי: המייל למנהל</h2>
-        <p>כך נראה המייל שמור וערן יקבלו בכל יום חמישי בערב:</p>
+        <h2>6. תוצר סופי: דוגמת מייל למנהל</h2>
+        <p>כך יכול להיראות מייל הסיכום השבועי שמתקבל אצל צוות הניהול:</p>
         
         <div class="email-preview">
             <div class="email-header">
                 <div class="email-meta"><strong>מאת:</strong> Harvest System Alert</div>
-                <div class="email-meta"><strong>אל:</strong> ערן, מור, דניאל</div>
+                <div class="email-meta"><strong>אל:</strong> צוות ניהול הקטיף</div>
                 <div class="email-meta"><strong>נושא:</strong> סיכום קטיף שבועי – 05/11/2025 עד 12/11/2025</div>
             </div>
             <div class="email-body">
@@ -520,30 +767,56 @@ function sendWeeklyHarvestEmail() {
 🫐 אוסנת: 12.5 ק"ג (נספקים + סוג ב')
 
 לצפייה בנתונים המלאים:
-[לינק לחוברת]
+[קישור לחוברת הראשית]
             </div>
         </div>
     </section>
 
+    <!-- 7. Maintenance & Triggers -->
     <section id="maintenance">
-        <h2>7. תחזוקה שוטפת</h2>
+        <h2>7. תחזוקה שוטפת וטריגרים</h2>
+
         <div class="callout info">
             <strong>ניהול טריגרים (Triggers):</strong><br>
-            יש לוודא ב-Apps Script שמוגדר טריגר מסוג <code>Time-driven</code> עבור הפונקציה <code>sendWeeklyHarvestEmail</code> ליום חמישי בערב.
+            במערכת מוגדרים שני טריגרים מרכזיים:
+            <ul>
+                <li><strong>On change / On edit</strong> – מפעיל את <code>rebuildHarvestData</code> כאשר הנתונים ב-<code>Raw_Responses</code> מתעדכנים (למשל בעקבות <code>IMPORTRANGE</code>).</li>
+                <li><strong>Time-driven שבועי</strong> – מפעיל את <code>sendWeeklyHarvestEmail</code> פעם בשבוע (למשל, יום חמישי בערב).</li>
+            </ul>
         </div>
-        <p><strong>שכפול לעסק נוסף?</strong></p>
+
+        <h3>איך להגדיר / לעדכן טריגר זמן שבועי</h3>
         <ol>
-            <li>שכפול חוברת תשובות וחוברת ראשית.</li>
-            <li>יצירת טופס Fillout חדש וחיבורו לחוברת התשובות החדשה.</li>
-            <li>עדכון נוסחת <code>IMPORTRANGE</code> בחוברת הראשית (תא A1 ב-Raw_Responses).</li>
-            <li>עדכון כתובות המייל בתוך הסקריפט.</li>
+            <li>נכנסים לפרויקט Apps Script המחובר לחוברת הראשית.</li>
+            <li>בצד שמאל בוחרים "מפעילים" (Triggers).</li>
+            <li>לוחצים על "הוספת טריגר חדש".</li>
+            <li>בוחרים:
+                <ul>
+                    <li>פונקציה להפעלה: <code>sendWeeklyHarvestEmail</code>.</li>
+                    <li>סוג טריגר: Time-driven.</li>
+                    <li>תדירות: Weekly.</li>
+                    <li>יום ושעה: לדוגמה – יום חמישי, בין 20:00–21:00.</li>
+                </ul>
+            </li>
+            <li>מאשרים הרשאות (גישה לקריאה מהגיליון ושליחת מיילים).</li>
         </ol>
+
+        <h3>שכפול לעסק נוסף</h3>
+        <ol>
+            <li>שכפול גיליון התשובות ושכפול החוברת הראשית.</li>
+            <li>יצירת טופס Fillout חדש וחיבורו לגיליון התשובות החדש.</li>
+            <li>עדכון נוסחת <code>IMPORTRANGE</code> בגיליון <code>Raw_Responses</code> בחוברת החדשה.</li>
+            <li>עדכון כתובות המייל ב-<code>sendWeeklyHarvestEmail</code>.</li>
+            <li>הגדרת טריגרים חדשים (On change + Weekly) בפרויקט Apps Script החדש.</li>
+        </ol>
+
+        <a href="#top" class="top-link">↑ חזרה למעלה</a>
     </section>
 
 </div>
 
 <footer>
-    <p>© 2025 הפטל של עופר | מערכת Harvest נבנתה ע"י צוות ביז-AI</p>
+    <p>© 2025 הפטל של עופר | מערכת Harvest</p>
 </footer>
 
 <script>
@@ -559,5 +832,6 @@ function sendWeeklyHarvestEmail() {
 
 </body>
 </html>
+
 Clean index.html – remove duplicate HTML
 
